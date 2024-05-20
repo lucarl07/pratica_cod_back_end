@@ -26,6 +26,23 @@
     "nome": "Paulo Nobre",
     "idade": 38,
     "email": "paulo.nobre@example.com",
-    "id": "32e46fe6-4192-40c4-b7ea-4957502e211d"
+    "id": "32e46fe6-4192-40c4-b7ea-4957502e211d",
+    "endereco": {
+      "rua": "Rua do Limoeiro",
+      "numero": 203,
+      "cidade": "Maceió",
+      "estado": "AL",
+      "cep": "50505-987"
+    },
+    "telefone": [
+      {
+        "tipo": "celular",
+        "numero": "(82) 92468-1357"
+      },
+      {
+        "tipo": "residencial",
+        "numero": "(82) 0800-7676"
+      }
+    ]
   }
 ]

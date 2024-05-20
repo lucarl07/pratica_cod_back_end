@@ -37,7 +37,7 @@ const server = createServer((req, res) => {
 
         if (!Object.hasOwn(newUser, "nome") || !Object.hasOwn(newUser, "idade") || !Object.hasOwn(newUser, "email")) {
           return writeResponse(400, { 
-            mensagem: "Dados insuficientes foram fornecidos; verifique se você digitou seu nome, idade e/ou e-mail." 
+            mensagem: "Dados insuficientes: verifique se você digitou seu nome, idade e/ou e-mail." 
           }, 'Bad request: lacks obligatory data.');
         } else if (data.some((user) => user.email === newUser.email)) {
           return writeResponse(403, { 
@@ -56,20 +56,108 @@ const server = createServer((req, res) => {
           }
 
           writeResponse(201, {
-            mensagem: "Requisição finalizada com sucesso!",
+            mensagem: "Usuário cadastrado com sucesso!",
             usuario: newUser
           });
         })
       })
 
-    } else if (PORT) {
+    } else if (method === 'POST' && url.startsWith('/pessoas/endereco/')) { // Cadastro de Endereço
       console.log(`${method} ${url}`)
-    } else if (PORT) {
+
+      const id = url.split('/')[3]
+      console.log(`ID: ${id}`)
+      const index = data.findIndex((user) => user.id === id)
+      
+      if (index === -1) {
+        return writeResponse(404, {
+          mensagem: "O usuário pesquisado não foi encontrado. Verifique a sintaxe e tente novamente."
+        }, `The account ${id} was not found.`)
+      }
+
+      let body = "";
+
+      req.on('data', (chunk) => { body += chunk });
+      req.on('end', () => {
+        const newAddress = JSON.parse(body)
+
+        if (!Object.hasOwn(newAddress, "rua") || !Object.hasOwn(newAddress, "numero") || !Object.hasOwn(newAddress, "cidade") ||
+        !Object.hasOwn(newAddress, "estado") || !Object.hasOwn(newAddress, "cep")) {
+          return writeResponse(400, { 
+            mensagem: "Dados insuficientes: todos os campos devem ser preenchidos." 
+          }, 'Bad request: lacks obligatory data.');
+        }
+
+        data[index] = {
+          ...data[index], 
+          endereco: newAddress
+        }
+
+        writeData(data, (err) => {
+          if (err) {
+            return writeResponse(500, { 
+              mensagem: "Erro ao adicionar dados. Por favor, tente novamente." 
+            }, 'An error ocurred while writing new data.');
+          }
+
+          writeResponse(201, {
+            mensagem: "Endereço adicionado com sucesso!",
+            usuario: data[index]
+          });
+        })
+      });
+
+    } else if (method === 'POST' && url.startsWith('/pessoas/telefone/')) { // Cadastro de Telefone
       console.log(`${method} ${url}`)
-    } else if (PORT) {
+
+      const id = url.split('/')[3]
+      console.log(`ID: ${id}`)
+      const index = data.findIndex((user) => user.id === id)
+      
+      if (index === -1) {
+        return writeResponse(404, {
+          mensagem: "O usuário pesquisado não foi encontrado. Verifique a sintaxe e tente novamente."
+        }, `The account ${id} was not found.`)
+      }
+
+      let body = "";
+
+      req.on('data', (chunk) => { body += chunk });
+      req.on('end', () => {
+        const phoneNumbers = JSON.parse(body)
+
+        const areNumbersValid = phoneNumbers.every(num => Object.hasOwn(num, "tipo") && Object.hasOwn(num, "numero"))
+
+        if (!areNumbersValid) {
+          return writeResponse(400, { 
+            mensagem: "Dados insuficientes: todos os números devem ter valor e conter um tipo." 
+          }, 'Bad request: lacks obligatory data.');
+        }
+
+        data[index] = {
+          ...data[index], 
+          telefone: phoneNumbers
+        }
+
+        writeData(data, (err) => {
+          if (err) {
+            return writeResponse(500, { 
+              mensagem: "Erro ao adicionar dados. Por favor, tente novamente." 
+            }, 'An error ocurred while writing new data.');
+          }
+
+          writeResponse(201, {
+            mensagem: "Telefone(s) adicionado(s) com sucesso!",
+            usuario: data[index]
+          });
+        })
+      });
+
+    } else if (false) {
       console.log(`${method} ${url}`)
-    } else if (PORT) {
+    } else if (method === 'GET' && url === '/pessoas') { // Listagem de Pessoas
       console.log(`${method} ${url}`)
+      writeResponse(200, data)
     } else {
       writeResponse(404, {
         mensagem: "A rota não foi encontrada ou é inexistente."
