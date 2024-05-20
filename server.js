@@ -171,8 +171,51 @@ const server = createServer((req, res) => {
     } else if (method === 'GET' && url === '/pessoas') { // Listagem de Pessoas
       console.log(`${method} ${url}`)
       writeResponse(200, data)
-    } else if (method === 'PUT' && url.startsWith('/pessoas/endereco/')) {
+    } else if (method === 'PUT' && url.startsWith('/pessoas/endereco/')) { // Atualização de Endereço
       console.log(`${method} ${url}`)
+      
+      const id = url.split('/')[3]
+      console.log(`ID: ${id}`)
+      const index = data.findIndex((user) => user.id === id)
+      
+      if (index === -1) {
+        return writeResponse(404, {
+          mensagem: "O usuário pesquisado não foi encontrado. Verifique a sintaxe e tente novamente."
+        }, `The account ${id} was not found.`)
+      }
+
+      let body = "";
+
+      req.on('data', (chunk) => { body += chunk });
+      req.on('end', () => {
+        const updtAddress = JSON.parse(body)
+
+        if (!Object.hasOwn(updtAddress, "rua") && !Object.hasOwn(updtAddress, "numero") && !Object.hasOwn(updtAddress, "cidade") &&
+        !Object.hasOwn(updtAddress, "estado") && !Object.hasOwn(updtAddress, "cep")) {
+          return writeResponse(400, { 
+            mensagem: "Dados insuficientes: pelo menos um (1) campo deve estar preenchido." 
+          }, 'Bad request: lacks obligatory data.');
+        }
+
+        data[index].endereco = {
+          ...data[index].endereco,
+          ...updtAddress
+        }
+
+        writeData(data, (err) => {
+          if (err) {
+            return writeResponse(500, { 
+              mensagem: "Erro ao atualizar dados. Por favor, tente novamente." 
+            }, 'An error ocurred while updating existing data.');
+          }
+
+          writeResponse(201, {
+            mensagem: "Endereço atualizado com sucesso!",
+            usuario: data[index]
+          });
+        })
+      });
+
     } else if (method === 'DELETE' && url.startsWith('/pessoas/telefone/')) { // Remoção de Telefone
       console.log(`${method} ${url}`)
       
