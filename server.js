@@ -171,6 +171,57 @@ const server = createServer((req, res) => {
     } else if (method === 'GET' && url === '/pessoas') { // Listagem de Pessoas
       console.log(`${method} ${url}`)
       writeResponse(200, data)
+    } else if (method === 'PUT' && url.startsWith('/pessoas/endereco/')) {
+      console.log(`${method} ${url}`)
+    } else if (method === 'DELETE' && url.startsWith('/pessoas/telefone/')) { // Remoção de Telefone
+      console.log(`${method} ${url}`)
+      
+      const id = url.split('/')[3]
+      console.log(`ID: ${id}`)
+      const index = data.findIndex((user) => user.id === id)
+      
+      if (index === -1) {
+        return writeResponse(404, {
+          mensagem: "O usuário pesquisado não foi encontrado. Verifique a sintaxe e tente novamente."
+        }, `The account ${id} was not found.`)
+      }
+
+      let body = "";
+
+      req.on('data', (chunk) => { body += chunk });
+      req.on('end', () => {
+        const phoneToBeDel = JSON.parse(body)
+
+        let phoneType = "", phoneNumber = ""
+
+        if (Object.hasOwn(phoneToBeDel, "tipo") || Object.hasOwn(phoneToBeDel, "numero")) {
+          phoneType = Object.hasOwn(phoneToBeDel, "tipo") ? phoneToBeDel.tipo : ""
+          phoneNumber = Object.hasOwn(phoneToBeDel, "numero") ? phoneToBeDel.numero : ""
+        } else {
+          return writeResponse(400, { 
+            mensagem: "Dados insuficientes: todos os números devem ter valor e conter um tipo." 
+          }, 'Bad request: lacks obligatory data.');
+        }
+
+        data[index].telefone.forEach((tel, i) => {
+          if (tel.tipo === phoneType || tel.numero === phoneNumber) {
+            data[index].telefone.splice(i, 1)
+          }
+        });
+
+        writeData(data, (err) => {
+          if (err) {
+            return writeResponse(500, { 
+              mensagem: "Erro ao remover dados. Por favor, tente novamente." 
+            }, 'An error ocurred while deleting data.');
+          }
+
+          writeResponse(201, {
+            mensagem: "Telefone removido com sucesso!",
+            usuario: data[index]
+          });
+        })
+      });
     } else {
       writeResponse(404, {
         mensagem: "A rota não foi encontrada ou é inexistente."
