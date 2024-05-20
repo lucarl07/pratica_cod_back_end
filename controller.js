@@ -1,7 +1,7 @@
 import { writeFile, readFile } from 'node:fs';
 
 export const readData = (callback) => {
-  readFile('./users.json', 'utf8', (err, data) => {
+  readFile('./pessoas.json', 'utf8', (err, data) => {
     if (err) {
       callback(err)
     }
@@ -16,7 +16,7 @@ export const readData = (callback) => {
 }
 
 export const writeData = (value, callback) => {
-  writeFile('./users.json', JSON.stringify(value, null, 2), 
+  writeFile('./pessoas.json', JSON.stringify(value, null, 2), 
     (err) => {
       if (err) {
         callback(err)

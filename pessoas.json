@@ -1,1 +1,31 @@
-[]
+[
+  {
+    "nome": "João Silva",
+    "idade": 30,
+    "email": "joao.silva@example.com",
+    "id": "0b9dd034-c4b6-425d-b53f-1afa29d18621",
+    "endereco": {
+      "rua": "Rua das Flores",
+      "numero": 123,
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "01234-567"
+    },
+    "telefones": [
+      {
+        "tipo": "celular",
+        "numero": "(11) 98765-4321"
+      },
+      {
+        "tipo": "residencial",
+        "numero": "(11) 1234-5678"
+      }
+    ]
+  },
+  {
+    "nome": "Paulo Nobre",
+    "idade": 38,
+    "email": "paulo.nobre@example.com",
+    "id": "32e46fe6-4192-40c4-b7ea-4957502e211d"
+  }
+]
