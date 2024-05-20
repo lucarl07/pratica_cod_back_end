@@ -153,8 +153,21 @@ const server = createServer((req, res) => {
         })
       });
 
-    } else if (false) {
+    } else if (method === 'GET' && url.startsWith('/pessoas/')) { // Visualização de Pessoa
       console.log(`${method} ${url}`)
+      
+      const id = url.split('/')[2]
+      console.log(`ID: ${id}`)
+      const user = data.find((user) => user.id === id)
+      
+      if (!user) {
+        writeResponse(404, {
+          mensagem: "O usuário pesquisado não foi encontrado. Verifique a sintaxe e tente novamente."
+        }, `The account ${id} was not found.`)
+      } else {
+        writeResponse(200, user)
+      }
+
     } else if (method === 'GET' && url === '/pessoas') { // Listagem de Pessoas
       console.log(`${method} ${url}`)
       writeResponse(200, data)
