@@ -170,4 +170,5 @@ server.listen(PORT, () => {
   console.clear()
   console.log('=:=:=:= ConnectPeople API =:=:=:= \n')
   console.log(`Where your info is always in hand! 😉 \nServer running on PORT: ${PORT} 🚀 \n`)
+  console.log(` • Access GET http://localhost:3600/pessoas to see a list of all users! \n`)
 })
